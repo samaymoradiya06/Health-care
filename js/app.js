@@ -128,14 +128,59 @@ function logout() {
 function setupMobileMenu() {
     const toggle = document.getElementById('navToggle');
     const menu = document.getElementById('navMenu');
+    const actions = document.querySelector('.nav-actions');
 
-    toggle?.addEventListener('click', () => {
-        menu.classList.toggle('active');
+    if (!toggle || !menu) return;
+
+    // Create a mobile actions container if it doesn't exist
+    let mobileActions = menu.querySelector('.mobile-actions');
+    if (!mobileActions) {
+        mobileActions = document.createElement('div');
+        mobileActions.className = 'mobile-actions';
+        menu.appendChild(mobileActions);
+    }
+
+    toggle.addEventListener('click', () => {
+        const isActive = menu.classList.toggle('active');
+        toggle.innerHTML = isActive ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        
+        if (isActive && actions) {
+            // Sync actions to mobile menu
+            mobileActions.innerHTML = '';
+            
+            // Add Register link for guests if not already there
+            if (!isAuthenticated) {
+                const regLink = document.createElement('a');
+                regLink.href = 'register.html';
+                regLink.className = 'nav-link mobile-only';
+                regLink.innerHTML = '<i class="fas fa-user-plus"></i> Register';
+                mobileActions.appendChild(regLink);
+            }
+
+            // Copy other actions
+            actions.querySelectorAll('a, button').forEach(btn => {
+                const clone = btn.cloneNode(true);
+                clone.classList.add('mobile-nav-btn');
+                if (clone.tagName === 'BUTTON' && btn.onclick) {
+                    clone.onclick = btn.onclick;
+                }
+                mobileActions.appendChild(clone);
+            });
+        }
     });
 
-    document.querySelectorAll('.nav-link').forEach(link => {
+    // Close menu when clicking outside or on a link
+    document.addEventListener('click', (e) => {
+        if (menu.classList.contains('active') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+            menu.classList.remove('active');
+            toggle.innerHTML = '<i class="fas fa-bars"></i>';
+        }
+    });
+
+    menu.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', () => {
             menu.classList.remove('active');
+            toggle.innerHTML = '<i class="fas fa-bars"></i>';
         });
     });
 }
