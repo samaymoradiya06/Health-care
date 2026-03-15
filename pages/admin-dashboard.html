@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - HealthGuard</title>
+    <meta name="description" content="Admin management portal">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="nav-logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard <small style="font-size: 0.8rem; opacity: 0.7;">Admin</small></span>
+            </a>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="admin-dashboard.html" class="nav-link active">Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div class="btn btn-icon" title="Admin">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <button class="btn btn-outline" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <div class="dashboard-page page-enter">
+            <section class="section">
+                <div class="dashboard-header">
+                    <div>
+                        <h1>Admin Portal 🛡️</h1>
+                        <p class="text-muted">Manage users and platform data</p>
+                    </div>
+                    <div class="date-display">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-3 mt-3" id="adminStatsGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-cogs"></i> Platform Settings</h3>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="toggleSection('userManagement')">
+                            <i class="fas fa-users-cog"></i>
+                            <span>Manage Users</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="toggleSection('tipManagement')">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Manage Tips</span>
+                        </button>
+                        <button class="quick-action-btn danger" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- User Management Section (Hidden by default) -->
+                <div id="userManagement" class="card mt-3 hidden">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-users"></i> Platform Users</h3>
+                    </div>
+                    <div id="fullUserList" class="reminder-list">
+                        <p class="text-muted p-3">Loading users...</p>
+                    </div>
+                </div>
+
+                <!-- Tip Management Section (Hidden by default) -->
+                <div id="tipManagement" class="card mt-3 hidden">
+                    <div class="card-header" style="justify-content: space-between; display: flex;">
+                        <h3 class="card-title"><i class="fas fa-lightbulb"></i> Health Tips</h3>
+                        <button class="btn btn-sm btn-primary" onclick="showAddTipModal()">+ Add Tip</button>
+                    </div>
+                    <div id="fullTipList" class="reminder-list">
+                        <p class="text-muted p-3">Loading tips...</p>
+                    </div>
+                </div>
+
+                <!-- Captured User Requirements -->
+                <div class="card mt-3">
+                    <div class="card-header" style="justify-content: space-between; display: flex; align-items: center;">
+                        <h3 class="card-title"><i class="fas fa-robot"></i> AI-Captured User Requirements</h3>
+                        <span class="status-badge info" id="reqCount">0 New</span>
+                    </div>
+                    <div id="requirementsList" class="reminder-list">
+                        <p class="text-muted p-3">Loading requirements...</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </div>
+            <div class="footer-links">
+                <p>&copy; 2026 HealthGuard. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check auth
+            const user = JSON.parse(localStorage.getItem('healthguard_user') || 'null');
+            if (!user || user.role !== 'admin') {
+                // Redirect if not admin
+                window.location.href = 'login.html';
+                return;
+            }
+
+            initApp();
+            loadAdminDashboard();
+            loadRequirements();
+        });
+
+        function toggleSection(id) {
+            const section = document.getElementById(id);
+            section.classList.toggle('hidden');
+            if (!section.classList.contains('hidden')) {
+                if (id === 'userManagement') loadAllUsers();
+                if (id === 'tipManagement') loadAllTips();
+            }
+        }
+
+        async function loadAllUsers() {
+            const list = document.getElementById('fullUserList');
+            try {
+                const response = await fetch('/api/admin/users');
+                const users = await response.json();
+                list.innerHTML = users.map(u => `
+                    <div class="reminder-item" style="justify-content: space-between;">
+                        <div><strong>${u.name}</strong><br><small>${u.email}</small></div>
+                        <button class="btn btn-sm btn-outline danger" onclick="deleteUser('${u._id}')">Delete</button>
+                    </div>
+                `).join('');
+            } catch (err) { list.innerHTML = 'Error loading users'; }
+        }
+
+        async function deleteUser(id) {
+            if (confirm('Delete this user?')) {
+                await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+                loadAllUsers();
+            }
+        }
+
+        async function loadAllTips() {
+            const list = document.getElementById('fullTipList');
+            try {
+                const response = await fetch('/api/admin/tips');
+                const tips = await response.json();
+                list.innerHTML = tips.map(t => `
+                    <div class="reminder-item" style="justify-content: space-between;">
+                        <div>${t.icon} ${t.text}</div>
+                        <button class="btn btn-sm btn-outline danger" onclick="deleteTip('${t._id}')">Delete</button>
+                    </div>
+                `).join('');
+            } catch (err) { list.innerHTML = 'Error loading tips'; }
+        }
+
+        async function showAddTipModal() {
+            const text = prompt('Enter tip text:');
+            if (text) {
+                await fetch('/api/admin/tips', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, category: 'Health', icon: '💡' })
+                });
+                loadAllTips();
+            }
+        }
+
+        async function deleteTip(id) {
+            if (confirm('Delete this tip?')) {
+                await fetch(`/api/admin/tips/${id}`, { method: 'DELETE' });
+                loadAllTips();
+            }
+        }
+
+        async function loadRequirements() {
+            const list = document.getElementById('requirementsList');
+            const countBadge = document.getElementById('reqCount');
+
+            try {
+                const response = await fetch('/api/admin/requirements');
+                const requirements = await response.json();
+
+                countBadge.textContent = `${requirements.length} Total`;
+
+                if (requirements.length === 0) {
+                    list.innerHTML = '<p class="text-muted p-3">No feature requests captured yet.</p>';
+                    return;
+                }
+
+                list.innerHTML = requirements.map(req => `
+                    <div class="reminder-item" style="justify-content: space-between;">
+                        <div class="flex-center gap-2">
+                             <div class="btn-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color);">
+                                <i class="fas fa-lightbulb"></i>
+                             </div>
+                             <div>
+                                <strong>${req.description}</strong>
+                                <div class="text-muted" style="font-size: 0.8rem;">
+                                    Requested by: ${req.userId ? req.userId.name : 'Guest'} • ${new Date(req.createdAt).toLocaleDateString()}
+                                </div>
+                             </div>
+                        </div>
+                        <span class="status-badge ${req.status === 'pending' ? 'warning' : 'success'}">${req.status}</span>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error(err);
+                list.innerHTML = '<p class="text-danger p-3">Failed to load requirements from server.</p>';
+            }
+        }
+
+        function loadAdminDashboard() {
+            // Set current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            // Mock Stats
+            const users = JSON.parse(localStorage.getItem('healthguard_users') || '[]');
+            const totalUsers = users.length;
+            const totalTips = healthTips.length;
+            const totalMeds = Object.keys(medicineData).length;
+
+            document.getElementById('adminStatsGrid').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon primary"><i class="fas fa-users"></i></div>
+                    <div>
+                        <div class="stat-value">${totalUsers}</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success"><i class="fas fa-lightbulb"></i></div>
+                    <div>
+                        <div class="stat-value">${totalTips}</div>
+                        <div class="stat-label">Health Tips</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning"><i class="fas fa-pills"></i></div>
+                    <div>
+                        <div class="stat-value">${totalMeds}</div>
+                        <div class="stat-label">Medicines Database</div>
+                    </div>
+                </div>
+            `;
+
+            // List recent users
+            const userList = document.getElementById('userList');
+            if (users.length === 0) {
+                userList.innerHTML = '<p class="text-muted p-3">No users registered yet.</p>';
+            } else {
+                userList.innerHTML = users.slice(-5).reverse().map(u => `
+                    <div class="reminder-item" style="justify-content: space-between;">
+                        <div class="flex-center gap-2">
+                             <div class="btn-icon" style="font-size: 1rem;"><i class="fas fa-user"></i></div>
+                             <div>
+                                <strong>${u.name}</strong>
+                                <div class="text-muted" style="font-size: 0.8rem;">${u.email}</div>
+                             </div>
+                        </div>
+                        <span class="status-badge success">Active</span>
+                    </div>
+                `).join('');
+            }
+        }
+    </script>
+</body>
+
+</html>

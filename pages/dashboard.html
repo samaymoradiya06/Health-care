@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - HealthGuard</title>
+    <meta name="description" content="Your personal health dashboard">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="nav-logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </a>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+                <li><a href="reports.html" class="nav-link">Reports</a></li>
+                <li><a href="symptoms.html" class="nav-link">Symptoms</a></li>
+                <li><a href="medicine.html" class="nav-link">Medicine</a></li>
+                <li><a href="habits.html" class="nav-link">Habits</a></li>
+                <li><a href="emergency.html" class="nav-link">Emergency</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="profile.html" class="btn btn-icon" title="Profile">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <button class="btn btn-outline" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <div class="dashboard-page page-enter">
+            <section class="section">
+                <!-- Health Nudge Alert -->
+                <div id="healthNudge" class="card mb-3 hidden" style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger);">
+                    <div class="card-body py-2 flex-between">
+                        <div class="flex-center gap-2">
+                            <i class="fas fa-exclamation-triangle text-danger"></i>
+                            <span id="nudgeText">Your health profile is incomplete.</span>
+                        </div>
+                        <a href="reports.html" id="nudgeLink" class="btn btn-sm btn-danger">Complete Now</a>
+                    </div>
+                </div>
+
+                <div class="dashboard-header">
+                    <div>
+                        <h1>Welcome back, <span id="userName">User</span>! 👋</h1>
+                        <p class="text-muted">Here's your health summary for today</p>
+                    </div>
+                    <div class="date-display">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-4 mt-3" id="statsGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    </div>
+                    <div class="quick-actions">
+                        <a href="reports.html" class="quick-action-btn">
+                            <i class="fas fa-file-medical"></i>
+                            <span>Analyze Report</span>
+                        </a>
+                        <a href="symptoms.html" class="quick-action-btn">
+                            <i class="fas fa-stethoscope"></i>
+                            <span>Check Symptoms</span>
+                        </a>
+                        <a href="medicine.html" class="quick-action-btn">
+                            <i class="fas fa-pills"></i>
+                            <span>Medicine Info</span>
+                        </a>
+                        <a href="habits.html" class="quick-action-btn">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Track Habits</span>
+                        </a>
+                        <a href="emergency.html" class="quick-action-btn danger">
+                            <i class="fas fa-ambulance"></i>
+                            <span>Emergency</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Health Alerts -->
+                <div class="grid grid-2 mt-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-bell"></i> Health Reminders</h3>
+                        </div>
+                        <div class="reminder-list" id="reminderList">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-lightbulb"></i> Today's Health Tip</h3>
+                        </div>
+                        <div class="tip-of-day" id="tipOfDay">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="home.html">Home</a>
+                <a href="emergency.html">Emergency</a>
+                <a href="profile.html">Profile</a>
+            </div>
+            <div class="footer-links">
+                <h4>Emergency Helplines (India)</h4>
+                <p>National Emergency: 112</p>
+                <p>Ambulance: 102 / 108</p>
+            </div>
+            <div class="footer-links">
+                <h4>Disclaimer</h4>
+                <p class="text-sm">This platform provides health awareness information only.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 HealthGuard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            // Redirect if not logged in
+            if (!isAuthenticated) {
+                showToast('Please login to access this page', 'warning');
+                window.location.href = 'login.html';
+                return;
+            }
+            loadDashboard();
+            checkHealthStatus();
+        });
+
+        async function checkHealthStatus() {
+            const user = JSON.parse(localStorage.getItem('healthguard_user'));
+            try {
+                const response = await fetch(`/api/auth/health-profile-status/${user._id || user.id}`);
+                const status = await response.json();
+                
+                const nudge = document.getElementById('healthNudge');
+                const nudgeText = document.getElementById('nudgeText');
+                const nudgeLink = document.getElementById('nudgeLink');
+
+                if (!status.hasReports) {
+                    nudge.classList.remove('hidden');
+                    nudgeText.innerText = "Medical report missing! Upload it for AI analysis.";
+                    nudgeLink.href = "reports.html";
+                } else if (!status.hasIllnessData) {
+                    nudge.classList.remove('hidden');
+                    nudgeText.innerText = "Tell us about any chronic illnesses for better advice.";
+                    nudgeLink.href = "profile.html";
+                    nudgeLink.innerText = "Update Profile";
+                }
+            } catch (err) { console.error('Error checking status'); }
+        }
+
+        function loadDashboard() {
+            const user = getCurrentUser();
+            const habits = getHabits();
+            const today = new Date().toISOString().split('T')[0];
+            const todayHabits = habits[today] || {};
+
+            // Set user name
+            document.getElementById('userName').textContent = user.name;
+
+            // Set current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            // Load stats
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon primary"><i class="fas fa-tint"></i></div>
+                    <div>
+                        <div class="stat-value">${todayHabits.water || 0}/8</div>
+                        <div class="stat-label">Glasses of Water</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success"><i class="fas fa-bed"></i></div>
+                    <div>
+                        <div class="stat-value">${todayHabits.sleep || 0}h</div>
+                        <div class="stat-label">Hours of Sleep</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning"><i class="fas fa-walking"></i></div>
+                    <div>
+                        <div class="stat-value">${todayHabits.steps || 0}</div>
+                        <div class="stat-label">Steps Today</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon danger"><i class="fas fa-pills"></i></div>
+                    <div>
+                        <div class="stat-value">${todayHabits.medicine ? '✓' : '✗'}</div>
+                        <div class="stat-label">Medicine Taken</div>
+                    </div>
+                </div>
+            `;
+
+            // Load reminders
+            document.getElementById('reminderList').innerHTML = `
+                <div class="reminder-item">
+                    <i class="fas fa-tint text-primary"></i>
+                    <span>Drink more water - ${8 - (todayHabits.water || 0)} glasses remaining</span>
+                </div>
+                <div class="reminder-item">
+                    <i class="fas fa-walking text-warning"></i>
+                    <span>Take a 10-minute walk break</span>
+                </div>
+                <div class="reminder-item">
+                    <i class="fas fa-eye text-success"></i>
+                    <span>20-20-20 rule: Look away from screen</span>
+                </div>
+            `;
+
+            // Load health tip
+            const tipIndex = new Date().getDate() % healthTips.length;
+            document.getElementById('tipOfDay').innerHTML = `
+                <span class="tip-emoji">${healthTips[tipIndex].icon}</span>
+                <p>${healthTips[tipIndex].tip}</p>
+            `;
+        }
+    </script>
+</body>
+
+</html>

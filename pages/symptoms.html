@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Awareness - HealthGuard</title>
+    <meta name="description" content="Check symptoms and learn about possible conditions">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="nav-logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </a>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="reports.html" class="nav-link">Reports</a></li>
+                <li><a href="symptoms.html" class="nav-link active">Symptoms</a></li>
+                <li><a href="medicine.html" class="nav-link">Medicine</a></li>
+                <li><a href="habits.html" class="nav-link">Habits</a></li>
+                <li><a href="emergency.html" class="nav-link">Emergency</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="profile.html" class="btn btn-icon" title="Profile">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <button class="btn btn-outline" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <div class="symptoms-page page-enter">
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">🩺 Symptom Awareness</h2>
+                    <p class="section-subtitle">Select your symptoms to learn about possible conditions. <strong>This is
+                            for awareness only, not diagnosis.</strong></p>
+                </div>
+
+                <div class="symptoms-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-list-check"></i> Select Your Symptoms</h3>
+                        </div>
+                        <div class="symptoms-grid" id="symptomsGrid">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label class="form-label">Or describe your illness/symptoms in detail:</label>
+                            <textarea id="illnessDescription" class="form-input" rows="3" placeholder="Example: I have a sore throat and low-grade fever since yesterday..."></textarea>
+                        </div>
+
+                        <button class="btn btn-primary btn-lg mt-3" onclick="checkSymptoms()">
+                            <i class="fas fa-search"></i> Check Symptoms
+                        </button>
+                    </div>
+
+                    <div id="symptomResults" class="symptom-results hidden">
+                        <!-- Results will appear here -->
+                    </div>
+                </div>
+
+                <div class="disclaimer-box mt-3">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p><strong>Important Disclaimer:</strong> This tool provides general health awareness information
+                        only. It is NOT a substitute for professional medical advice, diagnosis, or treatment. Always
+                        consult a qualified healthcare provider for medical concerns.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="home.html">Home</a>
+                <a href="emergency.html">Emergency</a>
+                <a href="profile.html">Profile</a>
+            </div>
+            <div class="footer-links">
+                <h4>Emergency Helplines (India)</h4>
+                <p>National Emergency: 112</p>
+                <p>Ambulance: 102 / 108</p>
+            </div>
+            <div class="footer-links">
+                <h4>Disclaimer</h4>
+                <p class="text-sm">This platform provides health awareness information only.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 HealthGuard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            if (!isAuthenticated) {
+                showToast('Please login to access this page', 'warning');
+                window.location.href = 'login.html';
+                return;
+            }
+            loadSymptoms();
+        });
+
+        function loadSymptoms() {
+            const grid = document.getElementById('symptomsGrid');
+            grid.innerHTML = Object.entries(symptomsData).map(([key, val]) => `
+                <label class="symptom-checkbox">
+                    <input type="checkbox" name="symptom" value="${key}">
+                    <span class="symptom-label">
+                        <span class="symptom-icon">${val.icon}</span>
+                        <span>${val.name}</span>
+                    </span>
+                </label>
+            `).join('');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker - HealthGuard</title>
+    <meta name="description" content="Track your daily health habits">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="nav-logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </a>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="reports.html" class="nav-link">Reports</a></li>
+                <li><a href="symptoms.html" class="nav-link">Symptoms</a></li>
+                <li><a href="medicine.html" class="nav-link">Medicine</a></li>
+                <li><a href="habits.html" class="nav-link active">Habits</a></li>
+                <li><a href="emergency.html" class="nav-link">Emergency</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="profile.html" class="btn btn-icon" title="Profile">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <button class="btn btn-outline" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <div class="habits-page page-enter">
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">📈 Habit Tracker</h2>
+                    <p class="section-subtitle">Track your daily health habits and see your progress</p>
+                </div>
+
+                <div class="habits-container">
+                    <!-- Today's Habits -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-calendar-day"></i> Today's Progress</h3>
+                            <span class="date-badge" id="todayDate"></span>
+                        </div>
+                        <div class="habits-grid" id="habitsGrid">
+                            <!-- Populated by JavaScript -->
+                        </div>
+
+                        <div class="medicine-reminder mt-3">
+                            <label class="form-checkbox medicine-check">
+                                <input type="checkbox" id="medicineCheckbox"
+                                    onchange="updateHabitDirect('medicine', this.checked)">
+                                <span><i class="fas fa-pills"></i> Medicine taken today</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Chart -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-chart-bar"></i> Weekly Progress</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="habitsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Habit Configuration -->
+                    <div class="card mt-3">
+                        <div class="card-header flex-between">
+                            <h3 class="card-title"><i class="fas fa-cog"></i> Habit Goals & Reminders</h3>
+                        </div>
+                        <div class="reminder-list" id="configList">
+                            <div class="reminder-item flex-between">
+                                <span><i class="fas fa-tint"></i> Water Target (glasses)</span>
+                                <input type="number" id="waterTarget" value="8" class="form-input" style="width: 80px;" onchange="saveHabitConfig('water', this.value)">
+                            </div>
+                            <div class="reminder-item flex-between">
+                                <span><i class="fas fa-bed"></i> Sleep Target (hours)</span>
+                                <input type="number" id="sleepTarget" value="8" class="form-input" style="width: 80px;" onchange="saveHabitConfig('sleep', this.value)">
+                            </div>
+                            <div class="reminder-item flex-between">
+                                <span><i class="fas fa-bell"></i> Medicine Reminder</span>
+                                <input type="time" id="medTime" value="08:00" class="form-input" style="width: 120px;" onchange="saveHabitConfig('medicine', 1, this.value)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="home.html">Home</a>
+                <a href="emergency.html">Emergency</a>
+                <a href="profile.html">Profile</a>
+            </div>
+            <div class="footer-links">
+                <h4>Emergency Helplines (India)</h4>
+                <p>National Emergency: 112</p>
+                <p>Ambulance: 102 / 108</p>
+            </div>
+            <div class="footer-links">
+                <h4>Disclaimer</h4>
+                <p class="text-sm">This platform provides health awareness information only.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 HealthGuard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            if (!isAuthenticated) {
+                showToast('Please login to access this page', 'warning');
+                window.location.href = 'login.html';
+                return;
+            }
+            loadHabits();
+            loadConfigs();
+            setTimeout(initHabitsChart, 100);
+        });
+
+        async function loadConfigs() {
+            const user = JSON.parse(localStorage.getItem('healthguard_user'));
+            try {
+                const response = await fetch(`/api/habits/config/${user._id || user.id}`);
+                const configs = await response.json();
+                configs.forEach(c => {
+                    if (c.habitName === 'water') document.getElementById('waterTarget').value = c.targetValue;
+                    if (c.habitName === 'sleep') document.getElementById('sleepTarget').value = c.targetValue;
+                    if (c.habitName === 'medicine') document.getElementById('medTime').value = c.reminderTime;
+                });
+            } catch (err) { console.error('Error loading configs'); }
+        }
+
+        async function saveHabitConfig(name, val, time = "08:00") {
+            const user = JSON.parse(localStorage.getItem('healthguard_user'));
+            try {
+                await fetch('/api/habits/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: user._id || user.id,
+                        habitName: name,
+                        targetValue: val,
+                        reminderTime: time,
+                        unit: name === 'water' ? 'glasses' : 'hours'
+                    })
+                });
+                showToast(`${name} goal updated!`, 'success');
+            } catch (err) { showToast('Failed to save goal', 'error'); }
+        }
+
+        function loadHabits() {
+            const habits = getHabits();
+            const today = new Date().toISOString().split('T')[0];
+            const todayHabits = habits[today] || { water: 0, sleep: 0, steps: 0, exercise: 0, medicine: false };
+
+            // Set today's date
+            document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+
+            // Load habits grid
+            document.getElementById('habitsGrid').innerHTML = `
+                <div class="habit-tracker-card">
+                    <div class="habit-icon water"><i class="fas fa-tint"></i></div>
+                    <h4>Water Intake</h4>
+                    <div class="habit-value">${todayHabits.water}/8 glasses</div>
+                    <div class="habit-controls">
+                        <button class="btn btn-sm" onclick="updateHabitAndReload('water', -1)">-</button>
+                        <button class="btn btn-sm btn-primary" onclick="updateHabitAndReload('water', 1)">+</button>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill water" style="width: ${(todayHabits.water / 8) * 100}%"></div>
+                    </div>
+                </div>
+
+                <div class="habit-tracker-card">
+                    <div class="habit-icon sleep"><i class="fas fa-bed"></i></div>
+                    <h4>Sleep</h4>
+                    <div class="habit-value">${todayHabits.sleep} hours</div>
+                    <input type="range" min="0" max="12" value="${todayHabits.sleep}" onchange="updateHabitDirectAndReload('sleep', this.value)">
+                    <div class="progress-bar">
+                        <div class="progress-fill sleep" style="width: ${(todayHabits.sleep / 8) * 100}%"></div>
+                    </div>
+                </div>
+
+                <div class="habit-tracker-card">
+                    <div class="habit-icon steps"><i class="fas fa-walking"></i></div>
+                    <h4>Steps</h4>
+                    <div class="habit-value">${todayHabits.steps.toLocaleString()} steps</div>
+                    <input type="number" class="form-input" value="${todayHabits.steps}" onchange="updateHabitDirectAndReload('steps', this.value)" placeholder="Enter steps">
+                    <div class="progress-bar">
+                        <div class="progress-fill steps" style="width: ${Math.min((todayHabits.steps / 10000) * 100, 100)}%"></div>
+                    </div>
+                </div>
+
+                <div class="habit-tracker-card">
+                    <div class="habit-icon exercise"><i class="fas fa-dumbbell"></i></div>
+                    <h4>Exercise</h4>
+                    <div class="habit-value">${todayHabits.exercise} mins</div>
+                    <input type="number" class="form-input" value="${todayHabits.exercise}" onchange="updateHabitDirectAndReload('exercise', this.value)" placeholder="Minutes">
+                    <div class="progress-bar">
+                        <div class="progress-fill exercise" style="width: ${Math.min((todayHabits.exercise / 30) * 100, 100)}%"></div>
+                    </div>
+                </div>
+            `;
+
+            // Set medicine checkbox
+            document.getElementById('medicineCheckbox').checked = todayHabits.medicine;
+        }
+
+        function updateHabitAndReload(type, change) {
+            updateHabit(type, change);
+            loadHabits();
+        }
+
+        function updateHabitDirectAndReload(type, value) {
+            updateHabitDirect(type, value);
+            loadHabits();
+        }
+    </script>
+</body>
+
+</html>

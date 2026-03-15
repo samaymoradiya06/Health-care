@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Analyzer - HealthGuard</title>
+    <meta name="description" content="Analyze your blood test reports">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="nav-logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </a>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="reports.html" class="nav-link active">Reports</a></li>
+                <li><a href="symptoms.html" class="nav-link">Symptoms</a></li>
+                <li><a href="medicine.html" class="nav-link">Medicine</a></li>
+                <li><a href="habits.html" class="nav-link">Habits</a></li>
+                <li><a href="emergency.html" class="nav-link">Emergency</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="profile.html" class="btn btn-icon" title="Profile">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <button class="btn btn-outline" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <div class="reports-page page-enter">
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">📊 Report Analyzer</h2>
+                    <p class="section-subtitle">Enter your blood test values to understand your health parameters</p>
+                </div>
+
+                <div class="analyzer-container">
+                    <div class="card">
+                        <div class="card-header" style="justify-content: space-between; display: flex; align-items: center;">
+                            <h3 class="card-title"><i class="fas fa-edit"></i> Report Data</h3>
+                            <button class="btn btn-sm btn-secondary" onclick="document.getElementById('reportImage').click()">
+                                <i class="fas fa-camera"></i> Scan Report Photo
+                            </button>
+                            <input type="file" id="reportImage" hidden accept="image/*" onchange="handleImageUpload(event)">
+                        </div>
+                        <form id="reportForm" onsubmit="analyzeReport(event)">
+                            <div class="test-grid" id="testGrid">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg mt-3">
+                                <i class="fas fa-search"></i> Manual Analysis
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- AI Analysis Results -->
+                    <div id="aiAnalysisResults" class="card mt-3 hidden glass-panel">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-robot"></i> AI Interpretation</h3>
+                        </div>
+                        <div class="card-body" id="aiResultContent">
+                            <p>Analyzing your report image...</p>
+                        </div>
+                    </div>
+
+                    <div id="analysisResults" class="analysis-results hidden">
+                        <!-- Results will appear here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="home.html">Home</a>
+                <a href="emergency.html">Emergency</a>
+                <a href="profile.html">Profile</a>
+            </div>
+            <div class="footer-links">
+                <h4>Emergency Helplines (India)</h4>
+                <p>National Emergency: 112</p>
+                <p>Ambulance: 102 / 108</p>
+            </div>
+            <div class="footer-links">
+                <h4>Disclaimer</h4>
+                <p class="text-sm">This platform provides health awareness information only.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 HealthGuard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            if (!isAuthenticated) {
+                showToast('Please login to access this page', 'warning');
+                window.location.href = 'login.html';
+                return;
+            }
+            loadReportForm();
+        });
+
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64 = e.target.result;
+                const aiResultSection = document.getElementById('aiAnalysisResults');
+                const resultContent = document.getElementById('aiResultContent');
+                
+                aiResultSection.classList.remove('hidden');
+                resultContent.innerHTML = '<p class="text-info"><i class="fas fa-spinner fa-spin"></i> AI is scanning your report image...</p>';
+
+                try {
+                    const user = JSON.parse(localStorage.getItem('healthguard_user'));
+                    const response = await fetch('/api/reports/analyze-vision', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: base64, userId: user._id || user.id })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.error) throw new Error(data.error);
+
+                    resultContent.innerHTML = `
+                        <div class="ai-summary mb-3 p-3 bg-glass rounded">
+                            <strong>Summary:</strong> ${data.summary}
+                        </div>
+                        <div class="ai-params grid grid-2 mb-3">
+                            ${data.parameters.map(p => `
+                                <div class="stat-card">
+                                    <div class="stat-icon ${p.status === 'Normal' ? 'success' : 'danger'}">
+                                        <i class="fas ${p.status === 'Normal' ? 'fa-check' : 'fa-exclamation'}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="stat-value">${p.value}</div>
+                                        <div class="stat-label">${p.name} (${p.status})</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="ai-recommendation p-3 border-left-success">
+                            <strong>AI Advice:</strong> ${data.recommendation}
+                        </div>
+                    `;
+                } catch (err) {
+                    resultContent.innerHTML = `<p class="text-danger">Failed to analyze image: ${err.message}</p>`;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function loadReportForm() {
+            const grid = document.getElementById('testGrid');
+            const tests = Object.entries(bloodTestRanges).slice(0, 12);
+            grid.innerHTML = tests.map(([key, val]) => `
+                <div class="test-input-group">
+                    <label class="form-label">${val.name} (${val.unit})</label>
+                    <input type="number" step="0.01" class="form-input" name="${key}" placeholder="Enter value">
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+
+</html>

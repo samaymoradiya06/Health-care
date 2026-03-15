@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logging in...</title>
+</head>
+<body>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; flex-direction: column;">
+        <i class="fab fa-github" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+        <h2>Logging you in using GitHub...</h2>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+            
+            if (dataParam) {
+                try {
+                    // Decode base64 and parse JSON
+                    const userData = JSON.parse(atob(dataParam));
+                    
+                    // Save to localStorage just like standard login does
+                    localStorage.setItem('healthguard_user', JSON.stringify(userData));
+                    
+                    // Redirect to dashboard
+                    window.location.href = 'dashboard.html';
+                } catch (err) {
+                    console.error('Error parsing OAuth data', err);
+                    alert('There was an error processing your GitHub login.');
+                    window.location.href = 'login.html';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthGuard - Smart Health Awareness Platform</title>
+    <meta name="description" content="Your comprehensive health companion for awareness, safety, and wellness tracking">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="nav-logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </a>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html" class="nav-link active">Home</a></li>
+                <li><a href="dashboard.html" class="nav-link auth-only">Dashboard</a></li>
+                <li><a href="reports.html" class="nav-link auth-only">Reports</a></li>
+                <li><a href="symptoms.html" class="nav-link auth-only">Symptoms</a></li>
+                <li><a href="medicine.html" class="nav-link auth-only">Medicine</a></li>
+                <li><a href="habits.html" class="nav-link auth-only">Habits</a></li>
+                <li><a href="emergency.html" class="nav-link">Emergency</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="login.html" class="btn btn-outline guest-only">Login</a>
+                <a href="profile.html" class="btn btn-icon auth-only" title="Profile">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <button class="btn btn-outline auth-only" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <div class="page-enter">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <div class="hero-badge">🏥 Your Health Companion</div>
+                    <h1 class="hero-title">Smart Health Awareness<br><span class="gradient-text">& Safety
+                            Platform</span></h1>
+                    <p class="hero-subtitle">Empowering you with health knowledge, medical awareness, and emergency
+                        preparedness. Your comprehensive guide to a healthier, safer life.</p>
+                    <div class="hero-actions">
+                        <a href="register.html" class="btn btn-primary btn-lg">
+                            <i class="fas fa-rocket"></i> Get Started Free
+                        </a>
+                        <a href="emergency.html" class="btn btn-outline btn-lg">
+                            <i class="fas fa-ambulance"></i> Emergency Info
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="hero-stat"><span>10K+</span>Health Tips</div>
+                        <div class="hero-stat"><span>500+</span>Medicines</div>
+                        <div class="hero-stat"><span>24/7</span>Emergency Help</div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-card">
+                        <div class="pulse-ring"></div>
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Health Tip Banner -->
+            <section class="tip-banner">
+                <div class="tip-content">
+                    <span class="tip-icon" id="tipIcon">💧</span>
+                    <p><strong>Health Tip:</strong> <span id="tipText">Drink at least 8 glasses of water daily to stay
+                            hydrated.</span></p>
+                    <button class="btn btn-sm" onclick="refreshTip()"><i class="fas fa-sync-alt"></i></button>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Comprehensive Health Features</h2>
+                    <p class="section-subtitle">Everything you need to understand, track, and improve your health</p>
+                </div>
+                <div class="grid grid-3">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-file-medical-alt"></i></div>
+                        <h3>Report Analyzer</h3>
+                        <p>Upload blood reports and get easy-to-understand explanations of your health parameters.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon secondary"><i class="fas fa-stethoscope"></i></div>
+                        <h3>Symptom Awareness</h3>
+                        <p>Learn about symptoms and possible conditions. Know when to seek medical attention.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon accent"><i class="fas fa-pills"></i></div>
+                        <h3>Medicine Safety</h3>
+                        <p>Get detailed information about medicines, dosages, side effects, and safety warnings.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon success"><i class="fas fa-heartbeat"></i></div>
+                        <h3>Habit Tracker</h3>
+                        <p>Track water intake, sleep, exercise, and medicine schedules with visual charts.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon danger"><i class="fas fa-first-aid"></i></div>
+                        <h3>Emergency First Aid</h3>
+                        <p>Quick access to first-aid guides for critical situations. Every second counts.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon info"><i class="fas fa-user-md"></i></div>
+                        <h3>Health Profile</h3>
+                        <p>Maintain your health history and preferences for personalized recommendations.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Emergency Numbers -->
+            <section class="section emergency-section">
+                <div class="section-header">
+                    <h2 class="section-title">🚨 Emergency Helplines (India)</h2>
+                    <p class="section-subtitle">Save these numbers. They can save lives.</p>
+                </div>
+                <div class="grid grid-4" id="emergencyGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="home.html">Home</a>
+                <a href="emergency.html">Emergency</a>
+                <a href="login.html">Login</a>
+            </div>
+            <div class="footer-links">
+                <h4>Emergency Helplines (India)</h4>
+                <p>National Emergency: 112</p>
+                <p>Ambulance: 102 / 108</p>
+                <p>Police: 100</p>
+            </div>
+            <div class="footer-links">
+                <h4>Disclaimer</h4>
+                <p class="text-sm">This platform provides health awareness information only. It is not a substitute for
+                    professional medical advice.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 HealthGuard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/chatbot.js"></script>
+    <script>
+        // Initialize home page
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            loadEmergencyNumbers();
+        });
+
+        function loadEmergencyNumbers() {
+            const grid = document.getElementById('emergencyGrid');
+            grid.innerHTML = emergencyNumbers.map(e => `
+                <div class="emergency-card ${e.color}">
+                    <i class="${e.icon}"></i>
+                    <h4>${e.name}</h4>
+                    <a href="tel:${e.number.split('/')[0].trim()}" class="emergency-number">${e.number}</a>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Awareness - HealthGuard</title>
+    <meta name="description" content="Emergency helplines and first aid guides">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="nav-logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </a>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html" class="nav-link">Home</a></li>
+                <li><a href="dashboard.html" class="nav-link auth-only">Dashboard</a></li>
+                <li><a href="reports.html" class="nav-link auth-only">Reports</a></li>
+                <li><a href="symptoms.html" class="nav-link auth-only">Symptoms</a></li>
+                <li><a href="medicine.html" class="nav-link auth-only">Medicine</a></li>
+                <li><a href="habits.html" class="nav-link auth-only">Habits</a></li>
+                <li><a href="emergency.html" class="nav-link active">Emergency</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="login.html" class="btn btn-outline guest-only">Login</a>
+                <a href="profile.html" class="btn btn-icon auth-only" title="Profile">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <button class="btn btn-outline auth-only" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <div class="emergency-page page-enter">
+            <section class="section">
+                <div class="section-header emergency-header">
+                    <h2 class="section-title">🚨 Emergency Awareness</h2>
+                    <p class="section-subtitle">Quick access to emergency information and first-aid guides</p>
+                </div>
+
+                <!-- Emergency Numbers -->
+                <div class="card emergency-card">
+                    <div class="card-header">
+                        <h3 class="card-title text-danger"><i class="fas fa-phone-alt"></i> Emergency Helplines (India)
+                        </h3>
+                    </div>
+                    <div class="emergency-numbers-grid" id="emergencyNumbersGrid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Emergency Situations -->
+                <div class="section-header mt-4">
+                    <h3 class="section-title">🏥 First Aid Guides</h3>
+                    <p class="section-subtitle">Click on any emergency situation for step-by-step first aid instructions
+                    </p>
+                </div>
+
+                <div class="emergency-grid" id="firstAidGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <div id="firstAidDetails" class="first-aid-details hidden">
+                    <!-- First aid details will appear here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>HealthGuard</span>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="home.html">Home</a>
+                <a href="login.html">Login</a>
+                <a href="register.html">Register</a>
+            </div>
+            <div class="footer-links">
+                <h4>Emergency Helplines (India)</h4>
+                <p>National Emergency: 112</p>
+                <p>Ambulance: 102 / 108</p>
+                <p>Police: 100</p>
+            </div>
+            <div class="footer-links">
+                <h4>Disclaimer</h4>
+                <p class="text-sm">This platform provides health awareness information only.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 HealthGuard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            loadEmergencyPage();
+        });
+
+        function loadEmergencyPage() {
+            // Load emergency numbers
+            document.getElementById('emergencyNumbersGrid').innerHTML = emergencyNumbers.map(e => `
+                <a href="tel:${e.number.split('/')[0].trim()}" class="emergency-number-card ${e.color}">
+                    <i class="${e.icon}"></i>
+                    <div>
+                        <h4>${e.name}</h4>
+                        <span class="number">${e.number}</span>
+                    </div>
+                </a>
+            `).join('');
+
+            // Load first aid cards
+            document.getElementById('firstAidGrid').innerHTML = Object.entries(emergencyFirstAid).map(([key, val]) => `
+                <div class="first-aid-card" onclick="showFirstAid('${key}')" style="--card-color: ${val.color}">
+                    <div class="first-aid-icon" style="background: ${val.color}20; color: ${val.color}">
+                        <i class="${val.icon}"></i>
+                    </div>
+                    <h4>${val.title}</h4>
+                    <p class="text-muted">Click for first aid steps</p>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+
+</html>
