@@ -4,6 +4,24 @@ const Requirement = require('../models/Requirement');
 const User = require('../models/User');
 const Tip = require('../models/Tip');
 
+// --- Platform Stats ---
+router.get('/stats', async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments({ role: { $ne: 'admin' } });
+        const totalTips = await Tip.countDocuments();
+        const totalRequirements = await Requirement.countDocuments();
+        
+        res.json({
+            totalUsers,
+            totalTips,
+            totalRequirements,
+            totalMedicines: 500 // Fallback or dynamic if model exists
+        });
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+});
+
 // --- User Management ---
 router.get('/users', async (req, res) => {
     try {
@@ -48,6 +66,18 @@ router.delete('/tips/:id', async (req, res) => {
     try {
         await Tip.findByIdAndDelete(req.params.id);
         res.json({ msg: 'Tip removed' });
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+});
+
+// --- Requirement Management ---
+router.get('/requirements', async (req, res) => {
+    try {
+        const requirements = await Requirement.find()
+            .populate('userId', 'name email')
+            .sort({ createdAt: -1 });
+        res.json(requirements);
     } catch (err) {
         res.status(500).send('Server Error');
     }

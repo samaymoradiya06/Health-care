@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const Tip = require('../models/Tip');
+
+// Get Latest Health Tip (Public)
+router.get('/tips/latest', async (req, res) => {
+    try {
+        const tip = await Tip.findOne().sort({ createdAt: -1 });
+        res.json(tip);
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+});
 
 // Register User
 router.post('/register', async (req, res) => {

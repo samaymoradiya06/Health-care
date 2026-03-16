@@ -197,7 +197,7 @@
             } catch (err) { console.error('Error checking status'); }
         }
 
-        function loadDashboard() {
+        async function loadDashboard() {
             const user = getCurrentUser();
             const habits = getHabits();
             const today = new Date().toISOString().split('T')[0];
@@ -259,12 +259,32 @@
                 </div>
             `;
 
-            // Load health tip
-            const tipIndex = new Date().getDate() % healthTips.length;
-            document.getElementById('tipOfDay').innerHTML = `
-                <span class="tip-emoji">${healthTips[tipIndex].icon}</span>
-                <p>${healthTips[tipIndex].tip}</p>
-            `;
+            // Load health tip from backend
+            try {
+                const response = await fetch('/api/auth/tips/latest');
+                const tip = await response.json();
+                
+                if (tip && tip.text) {
+                    document.getElementById('tipOfDay').innerHTML = `
+                        <span class="tip-emoji">${tip.icon || '💡'}</span>
+                        <p>${tip.text}</p>
+                    `;
+                } else {
+                    // Fallback to static tips if database is empty
+                    const tipIndex = new Date().getDate() % healthTips.length;
+                    document.getElementById('tipOfDay').innerHTML = `
+                        <span class="tip-emoji">${healthTips[tipIndex].icon}</span>
+                        <p>${healthTips[tipIndex].tip}</p>
+                    `;
+                }
+            } catch (err) {
+                // Silent fallback on error
+                const tipIndex = new Date().getDate() % healthTips.length;
+                document.getElementById('tipOfDay').innerHTML = `
+                    <span class="tip-emoji">${healthTips[tipIndex].icon}</span>
+                    <p>${healthTips[tipIndex].tip}</p>
+                `;
+            }
         }
     </script>
 </body>

@@ -250,59 +250,43 @@
             }
         }
 
-        function loadAdminDashboard() {
+        async function loadAdminDashboard() {
             // Set current date
             document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
             });
 
-            // Mock Stats
-            const users = JSON.parse(localStorage.getItem('healthguard_users') || '[]');
-            const totalUsers = users.length;
-            const totalTips = healthTips.length;
-            const totalMeds = Object.keys(medicineData).length;
+            try {
+                const response = await fetch('/api/admin/stats');
+                const stats = await response.json();
 
-            document.getElementById('adminStatsGrid').innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-icon primary"><i class="fas fa-users"></i></div>
-                    <div>
-                        <div class="stat-value">${totalUsers}</div>
-                        <div class="stat-label">Total Users</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon success"><i class="fas fa-lightbulb"></i></div>
-                    <div>
-                        <div class="stat-value">${totalTips}</div>
-                        <div class="stat-label">Health Tips</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon warning"><i class="fas fa-pills"></i></div>
-                    <div>
-                        <div class="stat-value">${totalMeds}</div>
-                        <div class="stat-label">Medicines Database</div>
-                    </div>
-                </div>
-            `;
-
-            // List recent users
-            const userList = document.getElementById('userList');
-            if (users.length === 0) {
-                userList.innerHTML = '<p class="text-muted p-3">No users registered yet.</p>';
-            } else {
-                userList.innerHTML = users.slice(-5).reverse().map(u => `
-                    <div class="reminder-item" style="justify-content: space-between;">
-                        <div class="flex-center gap-2">
-                             <div class="btn-icon" style="font-size: 1rem;"><i class="fas fa-user"></i></div>
-                             <div>
-                                <strong>${u.name}</strong>
-                                <div class="text-muted" style="font-size: 0.8rem;">${u.email}</div>
-                             </div>
+                document.getElementById('adminStatsGrid').innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-icon primary"><i class="fas fa-users"></i></div>
+                        <div>
+                            <div class="stat-value">${stats.totalUsers}</div>
+                            <div class="stat-label">Total Users</div>
                         </div>
-                        <span class="status-badge success">Active</span>
                     </div>
-                `).join('');
+                    <div class="stat-card">
+                        <div class="stat-icon success"><i class="fas fa-lightbulb"></i></div>
+                        <div>
+                            <div class="stat-value">${stats.totalTips}</div>
+                            <div class="stat-label">Health Tips</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon info"><i class="fas fa-robot"></i></div>
+                        <div>
+                            <div class="stat-value">${stats.totalRequirements}</div>
+                            <div class="stat-label">AI Requirements</div>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                console.error('Error loading stats:', err);
+                // Fallback for UI if error
+                document.getElementById('adminStatsGrid').innerHTML = '<p class="text-danger">Failed to load platform stats.</p>';
             }
         }
     </script>
